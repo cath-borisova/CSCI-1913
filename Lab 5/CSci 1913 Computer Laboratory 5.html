@@ -1,0 +1,264 @@
+
+<!-- saved from url=(0205)https://a4356-15665514.cluster79.canvas-user-content.com/courses/4356~194181/files/4356~15665514/course%20files/lab5.html?context_id=4356~194181&context_type=Course&download=1&id=43560000015665514&inline=1 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+  <title>
+   CSci 1913 Computer Laboratory 5
+  </title>
+  <style>
+   a:active
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   a:link
+    { color: blue;
+      font-weight: bold;
+      text-decoration: none }
+   a:visited
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   hr
+    { background-color: black;
+      border: none;
+      color: black;
+      height: 1px }
+   table
+    { border-collapse: collapse }
+  </style>
+ </head>
+ <body bgcolor="#FFFFFF">
+  <p align="center">
+   <b>Computer Laboratory 5</b>
+   <br>
+   <b>CS<small>CI</small> 1913: Introduction to Algorithms,</b>
+   <br>
+   <b>Data Structures, and Program Development</b>
+   <br>
+   <b>October 13–14, 2020</b>
+  </p>
+  <p>
+   <b>0. Introduction.</b>
+  </p>
+  <p align="justify">
+   This laboratory assignment involves implementing a data structure called a
+   <i>map.</i> A map associates objects called <i>keys</i> with other
+   objects called <i>values.</i> It is implemented as a Java class that
+   uses arrays internally.
+  </p>
+  <p>
+   <b>1. Theory.</b>
+  </p>
+  <p align="justify">
+   A map is a set of <i>key</i>-<i>value</i> pairs. Each key is said
+   to be <i>associated</i> with its corresponding value, so there is at
+   most one pair in the set with a given key. You can perform the following
+   operations on maps.
+  </p>
+  <ul>
+   <li>
+   <p>
+    You can test if a key has a value in the map.
+   </p>
+   </li><li>
+   <p>
+    You can add a new key-value pair to the map.
+   </p>
+   </li><li>
+   <p>
+    You can get the value that is associated with a given key.
+   </p>
+   </li><li>
+   <p>
+    You can change the value that is associated with a given key.
+   </p>
+  </li></ul>
+  <p align="justify">
+   For example, the keys might be <tt>String</tt>’s that are the
+   English words for numbers. The values might be <tt>Integer</tt>’s
+   that are the numbers corresponding to those words. If you give the map an
+   English word (like <tt>"ten"</tt>) then you can get back its
+   corresponding number (like <tt>10</tt>).
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The maps for this assignment use arrays, and
+   they work by doing linear search on those arrays. As a result, if a map has
+   <i>n</i> pairs, then its operations may need at most
+   <i>O</i>(<i>n</i>) key comparisons. However, there are better ways
+   to implement maps, using data structures that we have not yet discussed in
+   this course. These require only <i>O</i>(log&nbsp;<i>n</i>) or
+   even <i>O</i>(1) key comparisons.
+  </p>
+  <p>
+   <b>2. Implementation.</b>
+  </p>
+  <p align="justify">
+   You must write a Java class called <tt>Map</tt> that implements a map.
+   To simplify grading, your class must use the same names for things that are
+   given here. Your class <tt>Map</tt> must have two generic class
+   parameters, <tt>Key</tt> and <tt>Value</tt>, so it looks like
+   this. Here <tt>Key</tt> is the type of the map’s keys, and
+   <tt>Value</tt> is the type of the map’s values.
+  </p>
+  <blockquote>
+   <p>
+    <tt>class&nbsp;Map&lt;Key,&nbsp;Value&gt;&nbsp;</tt>
+    <br>
+    <tt>{&nbsp;</tt>
+    <br>
+    <tt>&nbsp;&nbsp;&#8942;&nbsp;</tt>
+    <br>
+    <tt>}</tt>
+   </p>
+  </blockquote>
+  <p align="justify">
+   Within the class <tt>Map</tt>, you must have two <tt>private</tt>
+   arrays called <tt>keys</tt> and <tt>values</tt>. The array
+   <tt>keys</tt> must be an array whose base type is the class parameter
+   <tt>Key</tt>. The array <tt>values</tt> must be an array whose
+   base type is the class parameter <tt>Value</tt>. Suppose that a key
+   <i>k</i> is found at the index <i>i</i> in the array
+   <tt>keys</tt>. Then the value associated with <i>k</i> is found at
+   the same index <i>i</i> in the array <tt>values</tt>. Do not try
+   to use only one array, because that will not work.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; You must also have a <tt>private</tt>
+   integer variable called <tt>count</tt> that records how many elements
+   of the arrays are being used. You may also need other <tt>private</tt>
+   variables that are not mentioned here.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Your class must have the following methods.
+   Most of them use <tt>count</tt>, <tt>keys</tt>, and
+   <tt>values</tt> somehow. Some methods are <tt>public</tt> and
+   others are <tt>private</tt>. The <tt>private</tt> methods are
+   helpers for the <tt>public</tt> methods; they may make your code easier
+   to write. Also, any key may be <tt>null</tt>, and any value may be
+   <tt>null</tt>. This will affect how you test if keys are equal.
+  </p>
+  <blockquote>
+   <dl compact="compact">
+    <dt>
+     <p>
+      <tt>public Map(int length)</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Constructor. If <tt>length</tt> is less than 0 then you must throw
+      an <tt>IllegalArgumentException</tt>. Otherwise, initialize an empty
+      <tt>Map</tt> whose <tt>keys</tt> and <tt>values</tt>
+      arrays have <tt>length</tt> elements. (Recall that you must make
+      arrays of <tt>Object</tt>’s, then cast them to the appropriate
+      types.)
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>public Value get(Key key)</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Search the array <tt>keys</tt> for an element that is equal to
+      <tt>key</tt>. If that element is at some index in
+      <tt>keys</tt>, then return the element at the same index in the
+      array <tt>values</tt>. If there is no element equal to
+      <tt>key</tt> in <tt>keys</tt>, then throw an
+      <tt>IllegalArgumentException</tt>.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>private boolean isEqual(Key leftKey, Key rightKey)</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Test if <tt>leftKey</tt> is equal to <tt>rightKey</tt>. Either
+      or both may be <tt>null</tt>. This method is necessary because you
+      must use <tt>==</tt> when <tt>leftKey</tt> or
+      <tt>rightKey</tt> are <tt>null</tt>, but you must use the
+      <tt>equals</tt> method when both are not <tt>null</tt>. (Recall
+      that <tt>null</tt> has no methods.)
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>public boolean isIn(Key key)</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Test if there is an element in <tt>keys</tt> that is equal to
+      <tt>key.</tt>
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>public void put(Key key, Value value)</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Search the array <tt>keys</tt> for an element that is equal to
+      <tt>key</tt>. If that element is at some index in
+      <tt>keys</tt>, then change the element at the same index in
+      <tt>values</tt> to <tt>value</tt>. If there is no element in
+      <tt>keys</tt> that is equal to <tt>key</tt>, then add
+      <tt>key</tt> to <tt>keys</tt>, and add <tt>value</tt> at
+      the same index in <tt>values</tt>. If <tt>keys</tt> and
+      <tt>values</tt> are full, so you cannot add <tt>key</tt> and
+      <tt>value</tt>, then throw an <tt>IllegalStateException</tt>.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>private int where(Key key)</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Search the array <tt>keys</tt> for an element that is equal to
+      <tt>key</tt>. Return the index of that element. If there is no
+      element equal to <tt>key</tt> in <tt>keys</tt>, then return
+      &#8722;1.
+     </p>
+    </dd>
+   </dl>
+  </blockquote>
+  <p align="justify">
+   When you compile your program, you may see the following
+   ‘‘warning’’ messages from <tt>javac</tt>.
+   Ignore them. As discussed in the lectures, these messages appear because
+   Java does not implement class parameters (the names between
+   <tt>&lt;</tt> and <tt>&gt;</tt>) correctly.
+  </p>
+  <blockquote>
+   <p>
+    <tt>Note:&nbsp;</tt><i>your&nbsp;file&nbsp;name</i><tt>.java&nbsp;uses&nbsp;unchecked&nbsp;or&nbsp;unsafe&nbsp;operations.</tt>&nbsp;
+    <br>
+    <tt>Note:&nbsp;recompile&nbsp;with&nbsp;-Xlint:unchecked&nbsp;for&nbsp;details.</tt>
+   </p>
+  </blockquote>
+  <p align="justify">
+   The file
+   <a href="https://a4356-15665514.cluster79.canvas-user-content.com/courses/4356~194181/files/4356~15665514/course%20files/tests5.java">
+    <tt>tests5.java</tt>
+   </a>
+   on Canvas contains Java code that performs a series of tests, worth 40
+   points. Each test calls a public method from your class <tt>Map</tt>,
+   and prints what the method returns. Each test is also followed by a comment
+   that tells how many points it is worth, and what it must print if it works
+   correctly. You may want to run additional tests, but you don’t get
+   points for those.
+  </p>
+  <p>
+   <b>3. Deliverables.</b>
+  </p>
+  <p align="justify">
+   Turn in the Java source code for the class <tt>Map</tt> and the results
+   of your tests. Your lab TA will tell you how and where to turn them in. Your
+   work must be submitted by <b>11:55 <small>PM</small></b> on
+   <b>Wednesday, October 21, 2020.</b>
+  </p>
+ 
+
+</body></html>

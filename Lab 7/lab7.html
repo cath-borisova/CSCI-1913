@@ -1,0 +1,195 @@
+<!-- Created by Bracy 0.4 on Sunday, October 25, 2020 at 7:31 PM CDT -->
+<html>
+ <head>
+  <title>
+   CSci 1913 Programming Laboratory 7
+  </title>
+  <style>
+   a:active
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   a:link
+    { color: blue;
+      font-weight: bold;
+      text-decoration: none }
+   a:visited
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   hr
+    { background-color: black;
+      border: none;
+      color: black;
+      height: 1px }
+   table
+    { border-collapse: collapse }
+  </style>
+ </head>
+ <body bgcolor="#FFFFFF">
+  <p align="center">
+   <b>Programming Laboratory 7</b>
+   <br />
+   <b>CS<small>CI</small> 1913: Introduction to Algorithms,</b>
+   <br />
+   <b>Data Structures, and Program Development</b>
+   <br />
+   <b>October 27&#8211;28, 2020</b>
+  </p>
+  <p>
+   <b>0. Introduction.</b>
+  </p>
+  <p align="justify">
+   Two queue classes were discussed in the lectures. One implemented a queue
+   using a linear linked list of nodes. The other implemented a queue using a
+   circular array. For this lab assignment, you must implement an iterator for
+   the queue class that uses a circular array.
+  </p>
+  <p>
+   <b>1. Theory.</b>
+  </p>
+  <p align="justify">
+   Suppose that we want to visit the elements stored in a sequence, like a
+   stack or a queue. Also suppose that we are not allowed to modify the
+   sequence to visit its elements. Then we can visit a sequence&rsquo;s
+   elements by using an <i>iterator.</i> An iterator is class whose
+   instances can visit the elements of a sequence. Each iterator typically has
+   a method called <tt>hasNext</tt> that tests if there are more elements
+   to be visited. It also has a method called <tt>next</tt> that returns
+   the next element to be visited, and advances to the following element. An
+   iterator that visits the elements of a linked stack was discussed in the
+   lectures.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; We can simplify an iterator&rsquo;s design by
+   assuming that the sequence will not change while we visit its elements. For
+   example, if we use an iterator to visit the elements of a stack, then we
+   assume that the stack will not be <tt>push</tt>&rsquo;ed or
+   <tt>pop</tt>&rsquo;ped. Similarly, if we use an iterator to visit the
+   elements of a queue, then we assume that the queue will not be
+   <tt>enqueue</tt>&rsquo;d or <tt>dequeue</tt>&rsquo;d. If a
+   sequence changes while an iterator visits its elements, then the actions of
+   the iterator become <i>undefined</i>&#8212;which means they need not
+   work correctly after that happens.
+  </p>
+  <p>
+   <b>2. Implementation.</b>
+  </p>
+  <p align="justify">
+   You must add the following members to the class
+   <a href="ArrayQueue.java">
+    <tt>ArrayQueue,</tt>
+   </a>
+   whose Java source code is available on Canvas. These members implement an
+   iterator for <tt>ArrayQueue</tt>. You are not allowed to modify
+   <tt>ArrayQueue</tt> except to add these additional members.
+  </p>
+  <blockquote>
+   <dl compact="compact">
+    <dt>
+     <p>
+      <tt>public class Iterator</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      This class must be nested inside <tt>ArrayQueue</tt>. An instance of
+      this class may be used to visit the current elements of an instance of
+      <tt>ArrayQueue</tt>. It must have one or more private variables that
+      let it &lsquo;&lsquo;know&rsquo;&rsquo; which elements of
+      <tt>ArrayQueue</tt> are to be visited next. You must decide what
+      those private variables are. Hint: you need not copy the array from
+      <tt>ArrayQueue</tt>.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>private Iterator(</tt>...<tt>)</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      This is <tt>Iterator</tt>&rsquo;s constructor. Of course it must be
+      inside <tt>Iterator</tt>. It must set <tt>Iterator</tt>&rsquo;s
+      private variables to the values of its parameters. You must decide what
+      these parameters are.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>public boolean hasNext()</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      This method must be inside <tt>Iterator</tt>. It must return
+      <tt>true</tt> if there are more elements of <tt>ArrayQueue</tt>
+      that remain to be visited. It must return <tt>false</tt> otherwise.
+      This method must use <tt>Iterator</tt>&rsquo;s private variables
+      only. Hint: use ideas from <tt>ArrayQueue</tt>&rsquo;s method
+      <tt>isEmpty</tt>.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>public Base next()</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      This method must be inside the class <tt>Iterator</tt>. It must
+      return the next <tt>Base</tt> element to be visited from
+      <tt>ArrayQueue</tt>. If no more elements remain to be visited, then
+      it must throw an <tt>IllegalStateException</tt>. This method must
+      use <tt>Iterator</tt>&rsquo;s private variables only. Hint: use
+      ideas from <tt>ArrayQueue</tt>&rsquo;s method <tt>dequeue</tt>.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>public Iterator iterator()</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      This method must be inside <tt>ArrayQueue</tt>. It must call
+      <tt>Iterator</tt>&rsquo;s constructor to make a new instance of
+      <tt>Iterator</tt>. It must then return the new instance.
+     </p>
+    </dd>
+   </dl>
+  </blockquote>
+  <p align="justify">
+   This gives us a different kind of iterator from the one discussed in the
+   lectures, and also different from the ones provided by Java. It does not
+   have a <tt>remove</tt> method, and it is not accessed through an
+   interface.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Be careful to put all class members in the
+   right places. For example, the class <tt>Iterator</tt> must be nested
+   inside the class <tt>ArrayQueue</tt>, and the method <tt>next</tt>
+   must be nested inside the class <tt>Iterator</tt>, etc. If the members
+   are in the wrong places, then the iterator will not work.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The file
+   <a href="tests7.java">
+    <tt>tests7.java</tt>
+   </a>
+   on Canvas contains Java code that performs a series of tests. The tests call
+   methods from the <tt>ArrayQueue</tt> class and your
+   <tt>Iterator</tt> class. Some of them print what those methods return.
+   Each test is also followed by a comment that tells how many points it is
+   worth, and optionally what must be printed if it works correctly.
+  </p>
+  <p>
+   <b>3. Deliverables.</b>
+  </p>
+  <p align="justify">
+   This lab is worth <b>20 points.</b> Run the tests, then turn in their
+   results, along with Java source code for the modified
+   <tt>ArrayQueue</tt> class with your <tt>Iterator</tt> class in it.
+   Your work will be due at <b>11:55 <small>PM</small></b> on
+   <b>Wednesday, November 4, 2020.</b> If you do not know how to turn it
+   in, then please ask your lab TA&rsquo;s.
+  </p>
+ </body>
+</html>

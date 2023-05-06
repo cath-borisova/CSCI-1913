@@ -1,0 +1,619 @@
+<!-- Created by Bracy 0.4 on Tuesday, October 20, 2020 at 2:36 PM CDT -->
+<html>
+ <head>
+  <title>
+   CSci 1913 Programming Project 1
+  </title>
+  <style>
+   a:active
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   a:link
+    { color: blue;
+      font-weight: bold;
+      text-decoration: none }
+   a:visited
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   hr
+    { background-color: black;
+      border: none;
+      color: black;
+      height: 1px }
+   table
+    { border-collapse: collapse }
+  </style>
+ </head>
+ <body bgcolor="#FFFFFF">
+  <p align="center">
+   <b>Programming Project 1</b>
+   <br />
+   <b>CS<small>CI</small> 1913: Introduction to Algorithms,</b>
+   <br />
+   <b>Data Structures, and Program Development</b>
+   <br />
+   <br />
+   <i>Last revision October 20, 2020</i>
+  </p>
+  <p>
+   <b>0. Introduction.</b>
+  </p>
+  <p align="justify">
+   <i>Perte de Temps</i> is a solitaire game played with a deck of cards.
+   Its name means &lsquo;&lsquo;time waster&rsquo;&rsquo; in French (or at
+   least
+   <a href="https://translate.google.com">
+    Google Translate
+   </a>
+   says it does). In this project, you will write a Java program that plays
+   Perte de Temps. Despite its name, this program may still be interesting,
+   because it demonstrates how stacks work. Also, if you have a program that
+   plays Perte de Temps, then you need not waste time playing it yourself.
+  </p>
+  <p>
+   <b>1. Theory.</b>
+  </p>
+  <p align="justify">
+   A standard <i>deck</i> has 52 <i>cards.</i> Each card has one of
+   thirteen <i>ranks,</i> called <i>ace, two, three, four, five, six,
+   seven, eight, nine, ten, jack, queen,</i> and <i>king.</i> These
+   ranks correspond to the integers 0 through 12, respectively. Each card also
+   has one of four <i>suits,</i> called <i>club, diamond, heart,</i>
+   and <i>spade.</i> These suits correspond to the integers 0 through 3,
+   respectively. A standard deck also has <i>jokers,</i> but they are not
+   used here.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Perte de Temps is played in the following
+   way. Shuffle the deck, and deal the cards face-down into a row of thirteen
+   <i>piles,</i> with four cards in each pile. This row of piles is called
+   the <i>tableau.</i> Piles are numbered from 0 to 12, so that each pile
+   corresponds to a card rank. Play now proceeds according to the following
+   rules.
+  </p>
+  <ol>
+   <li>
+   <p align="justify">
+    Let the pile number <i>p</i> be 0. Draw a card
+    <i>c</i><sub>1</sub> from pile 0.
+   </p>
+   <li>
+   <p align="justify">
+    If pile <i>p</i> is empty, then go to step 7.
+   </p>
+   <li>
+   <p align="justify">
+    Draw a card <i>c</i><sub>2</sub> from pile <i>p.</i>
+   </p>
+   <li>
+   <p align="justify">
+    If <i>c</i><sub>1</sub> and <i>c</i><sub>2</sub> have
+    the same suit, then let <i>p</i> be
+    <i>c</i><sub>1</sub>&rsquo;s rank.
+   </p>
+   <li>
+   <p align="justify">
+    If <i>c</i><sub>1</sub> and <i>c</i><sub>2</sub> have
+    different suits, then let <i>p</i> be
+    <i>c</i><sub>2</sub>&rsquo;s rank.
+   </p>
+   <li>
+   <p align="justify">
+    Throw away <i>c</i><sub>1</sub>. Let
+    <i>c</i><sub>1</sub> be <i>c</i><sub>2</sub>. Go to
+    step 2.
+   </p>
+   <li>
+   <p align="justify">
+    If all the piles are empty, then the game is won. If some pile is not
+    empty, then the game is lost.
+   </p>
+  </ol>
+  <p align="justify">
+   A program that plays Perte de Temps can use arrays and stacks internally.
+   The shuffled deck of cards, before it has been dealt, is represented as an
+   array stack. The tableau is represented as an array of piles. Each pile in
+   the tableau is represented as a linked stack.
+  </p>
+  <p>
+   <b>2. Example.</b>
+  </p>
+  <p align="justify">
+   Here is an example game of Perte de Temps, shown step by step. This is
+   output produced automatically by a version of the program you&rsquo;re asked
+   to write for this assignment. Assume that the deck has been shuffled and
+   dealt to form the tableau.
+  </p>
+  <blockquote>
+   <p>
+    <tt>Got&nbsp;four&nbsp;(3)&nbsp;of&nbsp;clubs&nbsp;from&nbsp;pile&nbsp;0.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;four&nbsp;(3)&nbsp;of&nbsp;hearts&nbsp;from&nbsp;pile&nbsp;0.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;six&nbsp;(5)&nbsp;of&nbsp;hearts&nbsp;from&nbsp;pile&nbsp;3.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;nine&nbsp;(8)&nbsp;of&nbsp;clubs&nbsp;from&nbsp;pile&nbsp;3.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;seven&nbsp;(6)&nbsp;of&nbsp;spades&nbsp;from&nbsp;pile&nbsp;8.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;queen&nbsp;(11)&nbsp;of&nbsp;clubs&nbsp;from&nbsp;pile&nbsp;6.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;queen&nbsp;(11)&nbsp;of&nbsp;hearts&nbsp;from&nbsp;pile&nbsp;11.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;queen&nbsp;(11)&nbsp;of&nbsp;spades&nbsp;from&nbsp;pile&nbsp;11.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;seven&nbsp;(6)&nbsp;of&nbsp;hearts&nbsp;from&nbsp;pile&nbsp;11.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;eight&nbsp;(7)&nbsp;of&nbsp;diamonds&nbsp;from&nbsp;pile&nbsp;6.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;jack&nbsp;(10)&nbsp;of&nbsp;clubs&nbsp;from&nbsp;pile&nbsp;7.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;three&nbsp;(2)&nbsp;of&nbsp;clubs&nbsp;from&nbsp;pile&nbsp;10.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;seven&nbsp;(6)&nbsp;of&nbsp;diamonds&nbsp;from&nbsp;pile&nbsp;10.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;five&nbsp;(4)&nbsp;of&nbsp;clubs&nbsp;from&nbsp;pile&nbsp;6.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;eight&nbsp;(7)&nbsp;of&nbsp;spades&nbsp;from&nbsp;pile&nbsp;4.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;king&nbsp;(12)&nbsp;of&nbsp;diamonds&nbsp;from&nbsp;pile&nbsp;7.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;six&nbsp;(5)&nbsp;of&nbsp;spades&nbsp;from&nbsp;pile&nbsp;12.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;queen&nbsp;(11)&nbsp;of&nbsp;diamonds&nbsp;from&nbsp;pile&nbsp;5.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;five&nbsp;(4)&nbsp;of&nbsp;hearts&nbsp;from&nbsp;pile&nbsp;11.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;ace&nbsp;(0)&nbsp;of&nbsp;hearts&nbsp;from&nbsp;pile&nbsp;4.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;king&nbsp;(12)&nbsp;of&nbsp;hearts&nbsp;from&nbsp;pile&nbsp;4.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;ten&nbsp;(9)&nbsp;of&nbsp;hearts&nbsp;from&nbsp;pile&nbsp;0.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;eight&nbsp;(7)&nbsp;of&nbsp;hearts&nbsp;from&nbsp;pile&nbsp;12.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;two&nbsp;(1)&nbsp;of&nbsp;spades&nbsp;from&nbsp;pile&nbsp;9.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;nine&nbsp;(8)&nbsp;of&nbsp;spades&nbsp;from&nbsp;pile&nbsp;1.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;king&nbsp;(12)&nbsp;of&nbsp;spades&nbsp;from&nbsp;pile&nbsp;1.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;jack&nbsp;(10)&nbsp;of&nbsp;spades&nbsp;from&nbsp;pile&nbsp;8.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;ace&nbsp;(0)&nbsp;of&nbsp;spades&nbsp;from&nbsp;pile&nbsp;12.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;four&nbsp;(3)&nbsp;of&nbsp;diamonds&nbsp;from&nbsp;pile&nbsp;10.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;ten&nbsp;(9)&nbsp;of&nbsp;clubs&nbsp;from&nbsp;pile&nbsp;3.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;eight&nbsp;(7)&nbsp;of&nbsp;clubs&nbsp;from&nbsp;pile&nbsp;9.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;three&nbsp;(2)&nbsp;of&nbsp;spades&nbsp;from&nbsp;pile&nbsp;9.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;king&nbsp;(12)&nbsp;of&nbsp;clubs&nbsp;from&nbsp;pile&nbsp;2.&nbsp;</tt>
+    <br />
+    <tt>Got&nbsp;ace&nbsp;(0)&nbsp;of&nbsp;clubs&nbsp;from&nbsp;pile&nbsp;12.&nbsp;</tt>
+    <br />
+    <tt>Pile&nbsp;12&nbsp;is&nbsp;empty.&nbsp;We&nbsp;lost!</tt>
+   </p>
+  </blockquote>
+  <p align="justify">
+   Let&rsquo;s go through the first steps of this game. We start by drawing
+   <i>c</i>&#8321;, the four of clubs with rank 3, from pile 0.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; We draw <i>c</i>&#8322;, the four of
+   hearts with rank 3, from pile 0. The cards <i>c</i>&#8321; and
+   <i>c</i>&#8322; have different suits (clubs and hearts), so we&rsquo;ll
+   draw from pile 3 next. We let <i>c</i>&#8321; be <i>c</i>&#8322;,
+   the four of hearts.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; We draw <i>c</i>&#8322;, the six of
+   hearts with rank 5, from pile 3. The cards <i>c</i>&#8321; and
+   <i>c</i>&#8322; have the same suit (hearts), so we&rsquo;ll draw from
+   pile 3 again next. We let <i>c</i>&#8321; be <i>c</i>&#8322;, the
+   six of hearts.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; We draw <i>c</i>&#8322;, the nine of
+   clubs with rank 8, from pile 3. The cards <i>c</i>&#8321; and
+   <i>c</i>&#8322; have different suits (hearts and clubs), so we&rsquo;ll
+   draw from pile 8 next. We let <i>c</i>&#8321; be <i>c</i>&#8322;,
+   the nine of clubs.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; We draw <i>c</i>&#8322;, the seven of
+   spades with rank 6, from pile 8. The cards <i>c</i>&#8321; and
+   <i>c</i>&#8322; have different suits (clubs and spades) so we&rsquo;ll
+   draw from pile 6 next. We let <i>c</i>&#8321; be <i>c</i>&#8322;,
+   the seven of spades.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; We continue in this way until we try to draw
+   from pile 12, which is empty. If all the piles were empty, then we&rsquo;d
+   win the game. Unfortunately, at least one pile is not empty, so we lose.
+   Note that it is very hard to win a game of Perte de Temps! Your program may
+   be correct but never win a game. This is why it&rsquo;s called
+   &lsquo;&lsquo;time waster.&rsquo;&rsquo;
+  </p>
+  <p>
+   <b>3. Implementation.</b>
+  </p>
+  <p align="justify">
+   Your program must use six Java classes called <tt>Random</tt>,
+   <tt>Card</tt>, <tt>Deck</tt>, <tt>Pile</tt>,
+   <tt>Tableau</tt>, and <tt>PerteDeTemps</tt>. Here are descriptions
+   of all these classes and their methods.
+  </p>
+  <p align="justify">
+   <b>The class <tt>Random</tt>.</b> The Java class library provides
+   a class called <tt>Random</tt> that implements a random number
+   generator. You must use it to help shuffle the deck. No program can generate
+   truly random numbers, but <tt>Random</tt> produces numbers that are
+   good enough for our purposes. To use <tt>Random</tt>, you must put the
+   following line at the start of your program.
+  </p>
+  <blockquote>
+   <p>
+    <tt>import java.util.Random;</tt>
+   </p>
+  </blockquote>
+  <p align="justify">
+   Note that <tt>java</tt> and <tt>util</tt> are in lower case,
+   <tt>Random</tt> begins with an upper case letter, and the line ends
+   with a semicolon. The <tt>import</tt> statement obtains a class from
+   the Java library. The library is divided into <i>packages</i> and
+   <i>subpackages</i>. The package <tt>java</tt> contains subpackages
+   that are generally useful for writing Java programs. Its subpackage
+   <tt>util</tt> contains various utility classes, one of which is
+   <tt>Random</tt>.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; You will need only
+   <tt>Random</tt>&rsquo;s constructor and its method
+   <tt>nextInt</tt>. The constructor call
+   <tt>new</tt>&nbsp;<tt>Random()</tt> returns a new instance of the
+   class <tt>Random</tt>. If <tt>r</tt> is an instance of
+   <tt>Random</tt> created in this way, then <tt>r.nextInt()</tt>
+   returns a randomly generated <tt>int</tt>. It may be negative, and it
+   may have a large absolute value.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Your program must use small random
+   <tt>int</tt>&rsquo;s, greater than or equal to <tt>0</tt>. You can
+   get such an <tt>int</tt> by executing the Java expression
+   <tt>Math.abs(r.nextInt())&nbsp;%&nbsp;m</tt> where <tt>m</tt>
+   returns an <tt>int</tt> greater than <tt>0</tt>. The class
+   <tt>Math</tt> is built into Java, and contains public methods for many
+   mathematical functions. The public static method <tt>abs</tt>
+   implements the absolute value function. The operator <tt>%</tt> returns
+   the remainder after dividing its left argument by its right argument. As a
+   result, the expression returns a random <tt>int</tt> greater than or
+   equal to <tt>0</tt>, but less than <tt>m</tt>.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Hint: Your program must make only one
+   instance of <tt>Random</tt>. It must use that instance to make all the
+   random <tt>int</tt>&rsquo;s that it needs.
+  </p>
+  <p align="justify">
+   <b>The class <tt>Card</tt>.</b> Each instance of the class
+   <tt>Card</tt> represents a playing card. Java source code for
+   <tt>Card</tt> is available in the file
+   <a href="Card.java">
+    <tt>Card.java</tt>
+   </a>
+   on Canvas. To make your program easier to grade, you must use this source
+   code. You must not extend or modify <tt>Card</tt> in any way. Here is a
+   short description of <tt>Card</tt>&rsquo;s public methods, and what
+   they do.
+  </p>
+  <blockquote>
+   <dl compact="compact">
+    <dt>
+     <p>
+      <tt>public Card(int rank, int suit)</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Constructor. Initialize a new instance of <tt>Card</tt> with a given
+      <tt>rank</tt> and <tt>suit</tt>. The integer <tt>rank</tt>
+      must be between <tt>0</tt> and <tt>12</tt>. The integer
+      <tt>suit</tt> must be between <tt>0</tt> and <tt>3</tt>.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>public int getRank()</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Return the rank of this <tt>Card</tt>, an <tt>int</tt> between
+      <tt>0</tt> and <tt>12</tt>.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>public int getSuit()</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Return the suit of this <tt>Card</tt>, an <tt>int</tt> between
+      <tt>0</tt> and <tt>3</tt>.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>public String toString()</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Return a <tt>String</tt> that describes this <tt>Card</tt>,
+      such as <tt>"ace&nbsp;(0)&nbsp;of&nbsp;clubs"</tt>,
+      <tt>"two&nbsp;(1)&nbsp;of&nbsp;hearts"</tt>,
+      <tt>"king&nbsp;(12)&nbsp;of&nbsp;diamonds"</tt>, etc. This
+      <tt>String</tt> must be used only for printing.
+     </p>
+    </dd>
+   </dl>
+  </blockquote>
+  <p align="justify">
+   Note that <tt>Card</tt>&rsquo;s are immutable objects. No part of a
+   <tt>Card</tt> can be changed after it is created by its constructor.
+  </p>
+  <p align="justify">
+   <b>The class <tt>Deck</tt>.</b> An instance of the class
+   <tt>Deck</tt> represents a deck of <tt>Card</tt>&rsquo;s. You must
+   write <tt>Deck</tt> yourself. It must have the following public
+   methods, and they must work as described here.
+  </p>
+  <blockquote>
+   <dl compact="compact">
+    <dt>
+     <p>
+      <tt>public Deck()</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      (5 points.) Constructor. Make an array containing 52 different
+      <tt>Card</tt>&rsquo;s. You must use one or more loops: you will
+      receive no points for this method if you write 52 assignment statements.
+      The order of <tt>Card</tt>&rsquo;s within the array does not matter.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>public Card deal()</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      (5 points.) Return the next <tt>Card</tt> from the array made by the
+      constructor. You need not pick a <tt>Card</tt> at random, because
+      the <tt>Card</tt>&rsquo;s in the array must already be shuffled by
+      the time you call <tt>deal</tt>. Throw an
+      <tt>IllegalStateException</tt> if no cards remain to be dealt from
+      the array. This must run in <i>O</i>(1) time.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>public void shuffle()</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      (10 points.) Shuffle the deck of <tt>Card</tt>&rsquo;s that is
+      represented by the array made in the constructor. The easiest way is the
+      <a href="https://en.wikipedia.org/wiki/Fisher-Yates_shuffle">
+       Durstenfeld-Fisher-Yates
+      </a>
+      algorithm, named after its inventors. It works by exchanging randomly
+      chosen pairs of array elements, and runs in <i>O</i>(<i>n</i>)
+      time for an array of size <i>n.</i> You must use the following
+      pseudocode for this algorithm.
+     </p>
+     <ol>
+      <li>
+      <p align="justify">
+       Do steps 2 and 3 for integer values of <i>i,</i> starting from the
+       length of the array minus 1, and ending with 1.
+      </p>
+      <li>
+      <p align="justify">
+       Let <i>j</i> be a random integer between 0 and <i>i.</i>
+      </p>
+      <li>
+      <p align="justify">
+       Exchange the array elements at indexes <i>i</i> and <i>j.</i>
+      </p>
+     </ol>
+     <p align="justify">
+      If <tt>shuffle</tt> is called after any <tt>Card</tt>&rsquo;s
+      have been dealt (by the method <tt>deal</tt>), then it must throw an
+      <tt>IllegalStateException</tt>. Players are not allowed to shuffle
+      the deck after dealing has started!
+     </p>
+    </dd>
+   </dl>
+  </blockquote>
+  <p align="justify">
+   Hint: to write <tt>Deck</tt>, you can use ideas from the array stack
+   class that was discussed in the lectures.
+  </p>
+  <p align="justify">
+   <b>The class <tt>Pile</tt>.</b> Each instance of the class
+   <tt>Pile</tt> represents a pile of <tt>Card</tt>&rsquo;s. You must
+   write <tt>Pile</tt> yourself. It must have the following nested classes
+   and methods, which must work as described here.
+  </p>
+  <blockquote>
+   <dl compact="compact">
+    <dt>
+     <p>
+      <tt>private class Layer</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      (5 points.) An instance of this class represents a layer in the
+      <tt>Pile</tt>. It must have two slots. One must be called
+      <tt>card</tt>, and it must point to an instance of the class
+      <tt>Card</tt>. The other must be called <tt>next</tt>, and it
+      must point to the next <tt>Layer</tt> in this <tt>Pile</tt>, or
+      to <tt>null</tt>. The class <tt>Layer</tt> must also have a
+      constructor that takes two arguments, called <tt>card</tt> and
+      <tt>next</tt>, which determine the values of the two slots.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>public Pile()</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      (2 points.) Constructor. Initialize a new empty <tt>Pile</tt> of
+      <tt>Card</tt>&rsquo;s.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>public void add(Card card)</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      (3 points.) Put <tt>card</tt> on top of this <tt>Pile</tt>.
+      This must run in <i>O</i>(1) time.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>public Card draw()</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      (3 points.) Remove a <tt>Card</tt> from the top of this
+      <tt>Pile.</tt> Return that <tt>Card</tt>. Throw an
+      <tt>IllegalStateException</tt> if there are no
+      <tt>Card</tt>&rsquo;s in this <tt>Pile.</tt> This must run in
+      <i>O</i>(1) time.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>public boolean isEmpty()</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      (2 points.) Return <tt>true</tt> if this <tt>Pile</tt> has no
+      cards left in it. Return <tt>false</tt> otherwise. This must run in
+      <i>O</i>(1) time.
+     </p>
+    </dd>
+   </dl>
+  </blockquote>
+  <p align="justify">
+   Hint: to write <tt>Pile</tt>, you can use ideas from the linked stack
+   class that was discussed in the lectures.
+  </p>
+  <p align="justify">
+   <b>The class <tt>Tableau</tt>.</b> Each instance of the class
+   <tt>Tableau</tt> represents thirteen <tt>Pile</tt>&rsquo;s of
+   <tt>Card</tt>&rsquo;s. You must write <tt>Tableau</tt> yourself.
+   It must have the following methods, which must work as described here.
+  </p>
+  <blockquote>
+   <dl compact="compact">
+    <dt>
+     <p>
+      <tt>public Tableau()</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      (5 points.) Constructor. Make an array with thirteen empty
+      <tt>Pile</tt>&rsquo;s in it (see below). Also make a new instance of
+      <tt>Deck</tt>. Shuffle the <tt>Deck</tt>. Deal four
+      <tt>Card</tt>&rsquo;s from the shuffled <tt>Deck</tt> into each
+      <tt>Pile</tt>.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>public void play()</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      (10 points.) Play a game of Perte de Temps. Each time you get a
+      <tt>Card</tt> from a <tt>Pile</tt>, you must print:
+     </p>
+     <blockquote>
+      <p>
+       <tt>Got</tt>&nbsp;<i>c</i>&nbsp;<tt>from</tt>&nbsp;<tt>pile</tt>&nbsp;<i>p</i><tt>.</tt>
+      </p>
+     </blockquote>
+     <p align="justify">
+      Here <i>c</i> is a <tt>String</tt> describing the
+      <tt>Card</tt>, and <i>p</i> is the number of the
+      <tt>Pile</tt> you got it from. At the end of the game, if the
+      program won, then print:
+     </p>
+     <blockquote>
+      <p>
+       <tt>We</tt>&nbsp;<tt>won!</tt>
+      </p>
+     </blockquote>
+     <p align="justify">
+      If the program lost, then print:
+     </p>
+     <blockquote>
+      <p>
+       <tt>Pile</tt>&nbsp;<i>p</i>&nbsp;<tt>is</tt>&nbsp;<tt>empty.</tt>&nbsp;<tt>We</tt>&nbsp;<tt>lost!</tt>
+      </p>
+     </blockquote>
+     <p align="justify">
+      Where <i>p</i> is the number of the empty <tt>Pile</tt> that
+      the program tried to get a <tt>Card</tt> from, but could not. See
+      the example for details.
+     </p>
+    </dd>
+   </dl>
+  </blockquote>
+  <p align="justify">
+   Note that <tt>play</tt> is an exception to our usual rule that methods
+   shouldn&rsquo;t print things.
+  </p>
+  <p align="justify">
+   <b>The class <tt>PerteDeTemps</tt>.</b> (0 points.) This is the
+   driver class. It must contain only the <tt>main</tt> method. You must
+   write <tt>PerteDeTemps</tt> yourself. Hint: make an instance of
+   <tt>Tableau</tt> and let it do all the work for <tt>main</tt>.
+  </p>
+  <p>
+   <b>4. Deliverables.</b>
+  </p>
+  <p align="justify">
+   This project is worth <b>50 points.</b> It will be due in <b>two
+   weeks</b>, at <b>11:55 <small>PM</small></b> on <b>Monday,
+   November 2, 2020.</b> Unlike the lab assignments, <b><small>YOU ARE
+   NOT ALLOWED TO WORK WITH A PARTNER ON THIS PROJECT</small>!</b>
+   Although you can discuss the project in a general way with others,
+   <b><small>IT MUST BE WRITTEN ENTIRELY BY YOURSELF
+   ALONE</small>!</b>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; You must turn in Java source code for the
+   classes <tt>Card</tt>, <tt>Deck</tt>, <tt>Pile</tt>,
+   <tt>Tableau</tt>, and <tt>PerteDeTemps</tt>. (Turn in
+   <tt>Card</tt> even though you didn&rsquo;t write it.) You must also
+   turn in as much output as is necessary to convince yourself (and the
+   TA&rsquo;s) that your program works correctly. You may append the output to
+   the bottom of a source file in comments, or you may turn it in as a separate
+   file. If you do not know how or where to turn in your work, then please ask
+   one of your lab TA&rsquo;s.
+  </p>
+ </body>
+</html>

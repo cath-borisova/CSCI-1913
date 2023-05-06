@@ -1,0 +1,654 @@
+<!-- Created by Bracy 0.4 on Monday, November 16, 2020 at 4:33 PM CST -->
+<html>
+ <head>
+  <title>
+   CSci 1913 Programming Project 2
+  </title>
+  <style>
+   a:active
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   a:link
+    { color: blue;
+      font-weight: bold;
+      text-decoration: none }
+   a:visited
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   hr
+    { background-color: black;
+      border: none;
+      color: black;
+      height: 1px }
+   table
+    { border-collapse: collapse }
+  </style>
+ </head>
+ <body bgcolor="#FFFFFF">
+  <p align="center">
+   <b>Programming Project 2</b>
+   <br />
+   <b>CS<small>CI</small> 1913: Introduction to Algorithms,</b>
+   <br />
+   <b>Data Structures, and Program Development</b>
+   <br />
+   <br />
+   <i>Last revision November 16, 2020</i>
+  </p>
+  <p>
+   <b>0. Introduction.</b>
+  </p>
+  <p align="justify">
+   If we add key-value pairs to a binary search tree (<small>BST</small>)
+   in random order, then the tree is likely to be well balanced. If it has
+   <i>n</i> keys, then we can look up the key&rsquo;s value in about
+   <i>O</i>(log&#8322;&nbsp;<i>n</i>) key comparisons. However, if we
+   add key-value pairs in order of their keys, then the tree will be
+   degenerate. Now if it has <i>n</i> keys, then it will take
+   <i>O</i>(<i>n</i>) key comparisons to look up a key&rsquo;s value,
+   which is much slower when <i>n</i> is large.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; How can we design a <small>BST</small>
+   that is fast, regardless of the order in which its keys are added? In this
+   project, you will implement a data structure called a <i>hashed binary
+   search tree</i> (<small>HBST</small>) that may answer this question.
+   An <small>HBST</small> is unlikely to be perfectly balanced, but it is
+   likely to be much better balanced than an ordinary <small>BST</small>,
+   regardless of the order in which its keys are added.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; This project uses many ideas from the past
+   few weeks of the course, including association lists, binary search trees,
+   hashing, head nodes, and random numbers. You will have seen Java code for
+   almost all parts of this project by now, either in the lectures or on
+   Canvas. Much of your work will involve finding relevant parts of this code
+   and adapting them.
+  </p>
+  <p>
+   <b>1. Theory.</b>
+  </p>
+  <p align="justify">
+   Suppose that we give a key <i>k</i> to an <small>HBST</small>. We
+   might want to get the value that&rsquo;s associated with <i>k,</i> or
+   we might want to associate <i>k</i> with a new value. In either case,
+   instead of using <i>k</i> as the key directly, the
+   <small>HBST</small> uses an integer <i>h</i>(<i>k</i>) as the
+   key, where <i>h</i> is a high-quality hash function. Each node in the
+   <small>HBST</small> holds the integer hash of a key, not the key
+   itself. We then search the <small>HBST</small> using the integer hashes
+   of the keys, not the keys themselves.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; There are at least two reasons why we might
+   want to do that. First, suppose that we add a series of keys
+   <i>k</i>&#8321;, <i>k</i>&#8322; ..., <i>k&#8345;</i> and
+   their values to an <small>HBST</small>. Even when the keys are in
+   increasing or decreasing order, their hashes
+   <i>h</i>(<i>k</i>&#8321;), <i>h</i>(<i>k</i>&#8322;)
+   ..., <i>h</i>(<i>k&#8345;</i>) are likely to be in random order.
+   As a result, if we use the hashes as keys, then we&rsquo;re likely to obtain
+   an approximately balanced tree. Second, searching the
+   <small>HBST</small> involves comparing integers. Integers can be
+   compared in <i>O</i>(1) time, which is faster than we can compare other
+   kinds of keys.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Unfortunately, some problems remain.
+  </p>
+  <p align="justify">
+   <b>Collisions.</b> Since we&rsquo;re using a hash function
+   <i>h</i>, we may get collisions. These are keys
+   <i>k&#7522;</i>&nbsp;&#8800;&nbsp;<i>k&#11388;</i> for which
+   <i>h</i>(<i>k&#7522;</i>)&nbsp;=&nbsp;<i>h</i>(<i>k&#11388;</i>),
+   so the <small>HBST</small> will try to store the values for both keys
+   in the same node. We can solve this problem by <i>chaining,</i> so that
+   each node has an integer hash and an <i>association list</i> of
+   key-value pairs. To get the value associated with a key, we search the tree
+   for the association list that contains that key, and then search that list.
+   To change the value associated with a key, we search the tree for the
+   association list that contains that key, and then modify that list.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; We can think of an <small>HBST</small>
+   as being like a hash table that uses a <small>BST</small> instead of a
+   bucket array. An array has strict limits on the integers that can be its
+   indexes, but a <small>BST</small> has no such limits on the integers
+   that can be its keys. The hash function <i>h</i> can therefore return a
+   wide range of integers, but cause very few collisions. This means most of
+   the <small>HBST</small>&rsquo;s association lists will have only one
+   node, which can be searched in <i>O</i>(1) time.
+  </p>
+  <p align="justify">
+   <b>Converting keys to integers.</b> To define
+   <i>h</i>(<i>k</i>), we must somehow convert the key <i>k</i>
+   to an integer. Fortunately, Java solves that problem for us. Suppose that
+   <i>k</i> is represented as a pointer to an instance of a Java class
+   like <tt>Integer</tt> or <tt>String</tt>. Then
+   <i>k</i><tt>.hashCode()</tt> returns a Java <tt>int</tt>
+   that&rsquo;s computed from <i>k.</i> It may be negative, and it may
+   have a large absolute value, but that doesn&rsquo;t matter, because an
+   <small>HBST</small> can use a wide range of integers as its keys.
+   It&rsquo;s therefore tempting to let <i>h</i>(<i>k</i>) be simply
+   <i>k</i><tt>.hashCode()</tt>.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Unfortunately, that may not work. Suppose
+   that our keys <i>k</i>&#8321;, <i>k</i>&#8322; ...,
+   <i>k&#8345;</i> arrive in order, giving us a degenerate tree. We have
+   no guarantee that <i>k</i>&#8321;<tt>.hashCode()</tt>,
+   <i>k</i>&#8322;<tt>.hashCode()</tt> ...,
+   <i>k&#8345;</i><tt>.hashCode()</tt> won&rsquo;t also be in order,
+   giving us a different degenerate tree that&rsquo;s just as bad. To make a
+   degenerate tree unlikely, we must compute key hashes differently.
+  </p>
+  <p align="justify">
+   <b>Random numbers.</b> One way to do that uses a Java&rsquo;s random
+   number class <tt>Random</tt> from the <i>Perte de Temps</i>
+   solitaire game in Project 1. Recall that to use <tt>Random</tt>, we
+   must put the following line at the top of the Java source file. Don&rsquo;t
+   forget the annoying semicolon at the end.
+  </p>
+  <blockquote>
+   <p>
+    <tt>import java.util.Random;</tt>
+   </p>
+  </blockquote>
+  <p align="justify">
+   The class <tt>Random</tt> works by creating a hidden sequence of random
+   <tt>int</tt>&rsquo;s. Each sequence is identified by an
+   <tt>int</tt> called the <i>seed.</i> The sequences are produced
+   deterministically, so the same sequence is always produced for a given seed.
+   Now suppose that <tt>r</tt> is an instance of the class
+   <tt>Random</tt>, made by the expression
+   <tt>new</tt>&nbsp;<tt>Random()</tt>. Then the expression
+   <tt>r.setSeed(</tt><i>j</i><tt>)</tt> tells <tt>r</tt>
+   to produce random numbers from the sequence whose seed is <i>j,</i> an
+   <tt>int</tt>.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Now suppose we want to compute the hash for a
+   key <i>k.</i> We first compute an <tt>int</tt> from <i>k</i>
+   by writing <i>k</i>.<tt>.hashCode()</tt>. We then tell
+   <tt>r</tt> to create a new random number sequence whose seed is that
+   <tt>int</tt>, by writing
+   <tt>r.setSeed(</tt><i>k</i><tt>.hashCode())</tt>. After
+   we&rsquo;ve done that, <tt>r.nextInt()</tt> returns the first random
+   <tt>int</tt> from that sequence. We can use this <tt>int</tt> to
+   help compute the hash for the key <i>k.</i>
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Since the hashes are produced from random
+   sequences, they are very unlikely to appear in order. And since each random
+   sequence is produced deterministically from a seed, we will get always the
+   same random hash for each given key <i>k.</i>
+  </p>
+  <p>
+   <b>2. Implementation.</b>
+  </p>
+  <p align="justify">
+   You must write a Java class <tt>HBST</tt> that implements a hashed
+   binary search tree, as described in the previous section. Its keys must be
+   instances of the generic class <tt>Key</tt>, and its values must be
+   instances of the generic class <tt>Value</tt>, so it will look like
+   this. To simplify grading, your code must use the names shown here.
+  </p>
+  <blockquote>
+   <p>
+    <tt>class&nbsp;HBST&lt;Key,&nbsp;Value&gt;&nbsp;</tt>
+    <br />
+    <tt>{&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&#8942;&nbsp;</tt>
+    <br />
+    <tt>}</tt>
+   </p>
+  </blockquote>
+  <p align="justify">
+   Your class <tt>HBST</tt> must have two inner classes. One inner class,
+   called <tt>PairNode</tt>, represents the nodes of the association lists
+   that handle collisions. Each instance of <tt>PairNode</tt> must have a
+   <tt>Key</tt> slot called <tt>key</tt>, a <tt>Value</tt> slot
+   called <tt>value</tt>, and a <tt>PairNode</tt> slot called
+   <tt>next</tt>. The other inner class, called <tt>TreeNode</tt>,
+   represents the nodes of the binary search tree. It must have an
+   <tt>int</tt> slot called <tt>hash</tt>, a <tt>PairNode</tt>
+   slot called <tt>pairs</tt>, and two <tt>TreeNode</tt> slots called
+   <tt>left</tt> and <tt>right</tt>. Don&rsquo;t try to use the same
+   class for both kinds of nodes: that won&rsquo;t work.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Your class must have a private variable
+   called <tt>generator</tt> that points to an instance of
+   <tt>Random</tt>. It must also have a private variable called
+   <tt>root</tt> that points to an instance of <tt>TreeNode</tt>,
+   used as a head node.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Finally, your <tt>HBST</tt> class must
+   have all the following methods. Each method is worth a specific number of
+   points. You may write additional &lsquo;&lsquo;helper&rsquo;&rsquo; methods
+   if needed, but they will be worth 0 points.
+  </p>
+  <blockquote>
+   <dl compact="compact">
+    <dt>
+     <p>
+      <tt>public HBST()</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      (5 points.) Constructor. Initialize a new empty <small>HBST</small>.
+      Set <tt>generator</tt> to an instance of <tt>Random</tt>. Set
+      <tt>root</tt> to an instance of <tt>TreeNode</tt>. Hint: the
+      <tt>hash</tt> slot of <tt>root</tt> must be an
+      <tt>int</tt> that cannot appear in the <tt>hash</tt> slot of
+      any other <tt>TreeNode</tt>.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>public Value get(Key key)</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      (15 points.) Return the <tt>Value</tt> that is associated with
+      <tt>key</tt>, as described in the previous section. If no
+      <tt>Value</tt> is associated with <tt>key</tt>, then throw an
+      <tt>IllegalArgumentException</tt>. Note that <tt>key</tt> may
+      be <tt>null</tt>, and the returned <tt>Value</tt> may also be
+      <tt>null</tt>. Hint: remember to skip the head node at
+      <tt>root</tt>.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>public int height()</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      (5 points.) Return the height of this <small>HBST</small>. Hint:
+      remember to skip the head node at <tt>root</tt>.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>private int hash(Key key)</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      (5 points.) If <tt>key</tt> is <tt>null</tt>, then return
+      <tt>0</tt>. Otherwise, use <tt>generator</tt> to help compute
+      the hash index of <tt>key</tt>, as described in the previous
+      section, and return that hash index. Hint: return an <tt>int</tt>
+      that is guaranteed to be different from the one in the head node
+      <tt>root</tt>.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>public boolean isEmpty()</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      (5 points.) If the <small>HBST</small> is empty, then return
+      <tt>true</tt>, otherwise return <tt>false</tt>. You must do
+      this without using an <tt>if</tt>, in exactly one line of code.
+      Hint: remember to skip the head node at <tt>root</tt>.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>private boolean isEqual(Key left, Key right)</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      (0 points.) If <tt>left</tt> and <tt>right</tt> are equal, then
+      return <tt>true</tt>, otherwise return <tt>false</tt>. You will
+      need this as a &lsquo;&lsquo;helper&rsquo;&rsquo; for the methods
+      <tt>get</tt> and <tt>put</tt>. Note that <tt>left</tt> may
+      be <tt>null</tt>, <tt>right</tt> may be <tt>null</tt>, or
+      both may be <tt>null</tt>. It&rsquo;s worth 0 points because
+      you&rsquo;ve already seen code for it in the lectures, and in at least
+      one lab.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>public void put(Key key, Value value)</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      (20 points.) Associate <tt>key</tt> with <tt>value</tt>, as
+      discussed in the previous section. Note that <tt>key</tt> may be
+      <tt>null</tt>, or <tt>value</tt> may be <tt>null</tt>, or
+      both may be <tt>null</tt>. Hint: you must use the head node at
+      <tt>root</tt> to avoid a special case when adding the first
+      <tt>TreeNode</tt> to the <small>HBST</small>.
+     </p>
+    </dd>
+   </dl>
+  </blockquote>
+  <p align="justify">
+   Hint: you may want to review your code for the <tt>AssociationList</tt>
+   class from Lab 8.
+  </p>
+  <p>
+   <b>3. Examples.</b>
+  </p>
+  <p align="justify">
+   The driver class <tt>CornedBeefHash</tt> makes two instances of the
+   class <tt>HBST</tt>. The first instance, <tt>intToInt</tt>, maps
+   integers between <tt>&#8722;10</tt> and <tt>10</tt> to their
+   squares. The second instance, <tt>stringToInt</tt>, maps some Java
+   reserved names to their indexes in the array <tt>reserved</tt>. In both
+   instances, keys arrive at the <small>HBST</small>&rsquo;s in increasing
+   order. If an ordinary <small>BST</small> was used instead of an
+   <small>HBST</small>, then degenerate trees would result, but that must
+   not happen here!
+  </p>
+  <blockquote>
+   <p>
+    <tt>class&nbsp;CornedBeefHash&nbsp;</tt>
+    <br />
+    <tt>{&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;private&nbsp;final&nbsp;static&nbsp;String[]&nbsp;reserved&nbsp;=&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;{&nbsp;"abstract",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"assert",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"boolean",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"break",&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"byte",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"case",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"catch",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"char",&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"class",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"const",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"continue",&nbsp;&nbsp;&nbsp;&nbsp;"default",&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"do",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"double",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"else",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"extends",&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"false",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"final",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"finally",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"float",&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"for",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"goto",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"if",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"implements",&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"import",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"instanceof",&nbsp;&nbsp;&nbsp;"int",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"interface",&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"long",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"native",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"new",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"null",&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"package",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"private",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"protected",&nbsp;&nbsp;&nbsp;"public",&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"return",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"short",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"static",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"super",&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"switch",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"synchronized",&nbsp;"this",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"throw",&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"throws",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"transient",&nbsp;&nbsp;&nbsp;&nbsp;"true",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"try",&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"var",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"void",&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"volatile",&nbsp;&nbsp;&nbsp;&nbsp;"while"&nbsp;};&nbsp;</tt>
+    <br />
+    <tt>&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;public&nbsp;static&nbsp;void&nbsp;main(String&nbsp;[]&nbsp;args)&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;{&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;HBST&lt;Integer,&nbsp;Integer&gt;&nbsp;intToInt&nbsp;=&nbsp;new&nbsp;HBST&lt;Integer,&nbsp;Integer&gt;();&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;(int&nbsp;key&nbsp;=&nbsp;-10;&nbsp;key&nbsp;&lt;=&nbsp;10;&nbsp;key&nbsp;+=&nbsp;1)&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;intToInt.put(key,&nbsp;key&nbsp;*&nbsp;key);&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(intToInt.height());&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;(int&nbsp;key&nbsp;=&nbsp;-10;&nbsp;key&nbsp;&lt;=&nbsp;10;&nbsp;key&nbsp;+=&nbsp;1)&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.format("%3d&nbsp;%3d",&nbsp;key,&nbsp;intToInt.get(key));&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println();&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;</tt>
+    <br />
+    <tt>&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;System.out.println();&nbsp;</tt>
+    <br />
+    <tt>&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;HBST&lt;String,&nbsp;Integer&gt;&nbsp;stringToInt&nbsp;=&nbsp;new&nbsp;HBST&lt;String,&nbsp;Integer&gt;();&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;(int&nbsp;index&nbsp;=&nbsp;0;&nbsp;index&nbsp;&lt;&nbsp;reserved.length;&nbsp;index&nbsp;+=&nbsp;1)&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stringToInt.put(reserved[index],&nbsp;index);&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(stringToInt.height());&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;(int&nbsp;index&nbsp;=&nbsp;0;&nbsp;index&nbsp;&lt;&nbsp;reserved.length;&nbsp;index&nbsp;+=&nbsp;1)&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String&nbsp;name&nbsp;=&nbsp;reserved[index];&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.format("%02d&nbsp;%s",&nbsp;stringToInt.get(name),&nbsp;name);&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println();&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;}&nbsp;</tt>
+    <br />
+    <tt>}</tt>
+   </p>
+  </blockquote>
+  <p align="justify">
+   Here&rsquo;s the output from the <tt>main</tt> method. The lines
+   <tt>8</tt> and <tt>11</tt> are the heights of the
+   <small>HBST</small>&rsquo;s <tt>intToInt</tt> and
+   <tt>stringToInt</tt>. The remaining lines show the
+   <small>HBST</small>&rsquo;s keys and their values. Your output may be
+   different, but still be correct, depending on how you write
+   <tt>hash</tt>, and on how the class <tt>Random</tt> chooses its
+   random numbers.
+  </p>
+  <blockquote>
+   <p>
+    <tt>8&nbsp;</tt>
+    <br />
+    <tt>-10&nbsp;100&nbsp;</tt>
+    <br />
+    <tt>&nbsp;-9&nbsp;&nbsp;81&nbsp;</tt>
+    <br />
+    <tt>&nbsp;-8&nbsp;&nbsp;64&nbsp;</tt>
+    <br />
+    <tt>&nbsp;-7&nbsp;&nbsp;49&nbsp;</tt>
+    <br />
+    <tt>&nbsp;-6&nbsp;&nbsp;36&nbsp;</tt>
+    <br />
+    <tt>&nbsp;-5&nbsp;&nbsp;25&nbsp;</tt>
+    <br />
+    <tt>&nbsp;-4&nbsp;&nbsp;16&nbsp;</tt>
+    <br />
+    <tt>&nbsp;-3&nbsp;&nbsp;&nbsp;9&nbsp;</tt>
+    <br />
+    <tt>&nbsp;-2&nbsp;&nbsp;&nbsp;4&nbsp;</tt>
+    <br />
+    <tt>&nbsp;-1&nbsp;&nbsp;&nbsp;1&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;0&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;1&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;4&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;3&nbsp;&nbsp;&nbsp;9&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;4&nbsp;&nbsp;16&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;5&nbsp;&nbsp;25&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;6&nbsp;&nbsp;36&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;7&nbsp;&nbsp;49&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;8&nbsp;&nbsp;64&nbsp;</tt>
+    <br />
+    <tt>&nbsp;&nbsp;9&nbsp;&nbsp;81&nbsp;</tt>
+    <br />
+    <tt>&nbsp;10&nbsp;100&nbsp;</tt>
+    <br />
+    <tt>&nbsp;</tt>
+    <br />
+    <tt>11&nbsp;</tt>
+    <br />
+    <tt>00&nbsp;abstract&nbsp;</tt>
+    <br />
+    <tt>01&nbsp;assert&nbsp;</tt>
+    <br />
+    <tt>02&nbsp;boolean&nbsp;</tt>
+    <br />
+    <tt>03&nbsp;break&nbsp;</tt>
+    <br />
+    <tt>04&nbsp;byte&nbsp;</tt>
+    <br />
+    <tt>05&nbsp;case&nbsp;</tt>
+    <br />
+    <tt>06&nbsp;catch&nbsp;</tt>
+    <br />
+    <tt>07&nbsp;char&nbsp;</tt>
+    <br />
+    <tt>08&nbsp;class&nbsp;</tt>
+    <br />
+    <tt>09&nbsp;const&nbsp;</tt>
+    <br />
+    <tt>10&nbsp;continue&nbsp;</tt>
+    <br />
+    <tt>11&nbsp;default&nbsp;</tt>
+    <br />
+    <tt>12&nbsp;do&nbsp;</tt>
+    <br />
+    <tt>13&nbsp;double&nbsp;</tt>
+    <br />
+    <tt>14&nbsp;else&nbsp;</tt>
+    <br />
+    <tt>15&nbsp;extends&nbsp;</tt>
+    <br />
+    <tt>16&nbsp;false&nbsp;</tt>
+    <br />
+    <tt>17&nbsp;final&nbsp;</tt>
+    <br />
+    <tt>18&nbsp;finally&nbsp;</tt>
+    <br />
+    <tt>19&nbsp;float&nbsp;</tt>
+    <br />
+    <tt>20&nbsp;for&nbsp;</tt>
+    <br />
+    <tt>21&nbsp;goto&nbsp;</tt>
+    <br />
+    <tt>22&nbsp;if&nbsp;</tt>
+    <br />
+    <tt>23&nbsp;implements&nbsp;</tt>
+    <br />
+    <tt>24&nbsp;import&nbsp;</tt>
+    <br />
+    <tt>25&nbsp;instanceof&nbsp;</tt>
+    <br />
+    <tt>26&nbsp;int&nbsp;</tt>
+    <br />
+    <tt>27&nbsp;interface&nbsp;</tt>
+    <br />
+    <tt>28&nbsp;long&nbsp;</tt>
+    <br />
+    <tt>29&nbsp;native&nbsp;</tt>
+    <br />
+    <tt>30&nbsp;new&nbsp;</tt>
+    <br />
+    <tt>31&nbsp;null&nbsp;</tt>
+    <br />
+    <tt>32&nbsp;package&nbsp;</tt>
+    <br />
+    <tt>33&nbsp;private&nbsp;</tt>
+    <br />
+    <tt>34&nbsp;protected&nbsp;</tt>
+    <br />
+    <tt>35&nbsp;public&nbsp;</tt>
+    <br />
+    <tt>36&nbsp;return&nbsp;</tt>
+    <br />
+    <tt>37&nbsp;short&nbsp;</tt>
+    <br />
+    <tt>38&nbsp;static&nbsp;</tt>
+    <br />
+    <tt>39&nbsp;super&nbsp;</tt>
+    <br />
+    <tt>40&nbsp;switch&nbsp;</tt>
+    <br />
+    <tt>41&nbsp;synchronized&nbsp;</tt>
+    <br />
+    <tt>42&nbsp;this&nbsp;</tt>
+    <br />
+    <tt>43&nbsp;throw&nbsp;</tt>
+    <br />
+    <tt>44&nbsp;throws&nbsp;</tt>
+    <br />
+    <tt>45&nbsp;transient&nbsp;</tt>
+    <br />
+    <tt>46&nbsp;true&nbsp;</tt>
+    <br />
+    <tt>47&nbsp;try&nbsp;</tt>
+    <br />
+    <tt>48&nbsp;var&nbsp;</tt>
+    <br />
+    <tt>49&nbsp;void&nbsp;</tt>
+    <br />
+    <tt>50&nbsp;volatile&nbsp;</tt>
+    <br />
+    <tt>51&nbsp;while</tt>
+   </p>
+  </blockquote>
+  <p align="justify">
+   There are 21 key-value pairs in <tt>intToInt</tt>. A balanced
+   <small>BST</small> with these pairs would have a height of about
+   log&#8322;&nbsp;21, which is between 4 and 5; a degenerate
+   <small>BST</small> would have a height of 21. The height of
+   <tt>intToInt</tt> is 8&#8212;not as good as a balanced
+   <small>BST</small>, but still better than a degenerate
+   <small>BST</small>.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; There are 52 key-value pairs in
+   <tt>stringToInt</tt>. A balanced <small>BST</small> with these
+   pairs would have a height of about log&#8322;&nbsp;52, which is between 5
+   and 6; a degenerate <small>BST</small> would have a height of 52. The
+   height of <tt>stringToInt</tt> is 11&#8212;also not as good as a
+   balanced <small>BST</small>, but much better than a degenerate
+   <small>BST</small>.
+  </p>
+  <p>
+   <b>4. Deliverables.</b>
+  </p>
+  <p align="justify">
+   Unlike the lab assignments, you are not allowed to work with a partner on
+   this project. <b>I<small>T MUST BE DONE ENTIRELY BY YOURSELF</small>,
+   <small>ALONE</small>!</b> Although you can discuss the project in a
+   general way with others, you are not allowed to get help from anyone, except
+   Prof. Moen, the course TA&rsquo;s, and the S<small>MART</small> tutors
+   at Walter Library (see the syllabus for details).
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; You must turn in Java source code for the
+   class <tt>HBST</tt>. You must also turn in code for a driver class that
+   tests <tt>HBST</tt>, along with any output it produces. Write your
+   driver class to do as many tests as are necessary to convince yourself (and
+   the TA&rsquo;s) that your code works. You can put the source code for both
+   classes in the same file. You can also put the output from the driver
+   classes in a comment at the end of this file.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The project is worth <b>55 points.</b>
+   This project is due on Canvas at <b>11:55 <small>PM</small></b> on
+   <b>November 30, 2020</b>. <i>You&rsquo;re not allowed to work on it
+   over the Thanksgiving break!</i> If you do not know how or where to turn
+   it in, then please ask your lab TA&rsquo;s.
+  </p>
+ </body>
+</html>

@@ -1,0 +1,252 @@
+<!-- Created by Bracy 0.4 on Monday, November 30, 2020 at 11:03 PM CST -->
+<html>
+ <head>
+  <title>
+   CSci 1913 Computer Laboratory 12
+  </title>
+  <style>
+   a:active
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   a:link
+    { color: blue;
+      font-weight: bold;
+      text-decoration: none }
+   a:visited
+    { color: purple;
+      font-weight: bold;
+      text-decoration: none }
+   hr
+    { background-color: black;
+      border: none;
+      color: black;
+      height: 1px }
+   table
+    { border-collapse: collapse }
+  </style>
+ </head>
+ <body bgcolor="#FFFFFF">
+  <p align="center">
+   <b>Computer Laboratory 12</b>
+   <br />
+   <b>CS<small>CI</small> 1913: Introduction to Algorithms,</b>
+   <br />
+   <b>Data Structures, and Program Development</b>
+   <br />
+   <b>December 1&#8211;2, 2020</b>
+   <br />
+   <br />
+   <i>This is the last Java lab for the course!</i>
+  </p>
+  <p>
+   <b>0. Introduction.</b>
+  </p>
+  <p align="justify">
+   In this laboratory assignment, you will write a Java method that sorts a
+   linear, singly-linked list of integers using a version of the Selection Sort
+   algorithm. This shows how it is possible to sort sequential data structures
+   other than arrays. It also gives you some practice manipulating lists.
+  </p>
+  <p>
+   <b>1. Theory.</b>
+  </p>
+  <p align="justify">
+   Suppose that we have a list of integer keys:
+   [3,&nbsp;2,&nbsp;1,&nbsp;3,&nbsp;4]. (This is not Java&rsquo;s notation, but
+   mathematical notation.) We&rsquo;d like to make a new list that is like this
+   one, but in which the integer keys are sorted into nondecreasing order:
+   [1,&nbsp;2,&nbsp;3,&nbsp;3,&nbsp;4]. One way to do that is by using an
+   algorithm called <i>Selection Sort,</i> which can be described by the
+   following pseudocode.
+  </p>
+  <ol>
+   <li>
+   <p>
+    Let <i>unsorted</i> be a list of integers to be sorted. Let
+    <i>sorted</i> be [&nbsp;], an empty list.
+   </p>
+   <li>
+   <p>
+    If <i>unsorted</i> is empty, then stop. The list <i>sorted</i>
+    contains all the original elements of <i>unsorted,</i> sorted into
+    nondecreasing order.
+   </p>
+   <li>
+   <p>
+    Select the largest integer <i>max</i> from <i>unsorted.</i> If
+    <i>max</i> appears more than once in <i>unsorted,</i> then select
+    any one of those appearances, arbitrarily.
+   </p>
+   <li>
+   <p>
+    Add <i>max</i> to the front of <i>sorted.</i> Delete
+    <i>max</i> from <i>unsorted.</i> If <i>max</i> appears more
+    than once in <i>unsorted,</i> then delete any one of those
+    appearances, arbitrarily.
+   </p>
+   <li>
+   <p>
+    Go to step 2.
+   </p>
+  </ol>
+  <p align="justify">
+   As you can see from this description, Selection Sort gets its name because
+   it repeatedly <i>selects</i> the largest integer from
+   <i>unsorted</i> and adds it to the front of <i>sorted,</i> until
+   <i>unsorted</i> becomes empty. Selection Sort is a naive sorting
+   algorithm that requires <i>O</i>(<i>n</i>&#178;) key comparisons
+   to sort a list of <i>n</i> elements. This is because the loop in steps
+   2&#8211;5 runs <i>n</i> times, and within that loop, it takes at most
+   <i>n</i> comparisons to select an element in step 3.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Selection Sort can be implemented to sort
+   arrays, but in this laboratory assignment, you will write a method that uses
+   it to sort a linear, singly-linked list of Java <tt>int</tt>&rsquo;s.
+   You can use anything you know about these lists to write the method,
+   including: adding nodes to the front of a list, deleting nodes from anywhere
+   in a list, using head nodes, and the left-right trick. You may need to use
+   other things too.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; There are other algorithms that can also sort
+   linear singly-linked lists, but are far more efficient. One is
+   <i>Mergesort,</i> which can sort a list of <i>n</i> elements in
+   only <i>O</i>(<i>n</i>&nbsp;log&nbsp;<i>n</i>) key
+   comparisons, much better than <i>O</i>(<i>n</i>&#178;). However,
+   we don&rsquo;t care about Mergesort here.
+  </p>
+  <p>
+   <b>2. Implementation.</b>
+  </p>
+  <p align="justify">
+   The file
+   <a href="IntySortyList.java">
+    <tt>IntySortyList.java</tt>
+   </a>
+   on Canvas contains Java source code for a class called
+   <tt>IntySortyList</tt>. It contains an inner class, a private variable,
+   and some methods, described below.
+  </p>
+  <blockquote>
+   <dl compact="compact">
+    <dt>
+     <p>
+      <tt>private class Node</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      An inner class, used to build the singly-linked linear list of integers
+      whose head node is <tt>first</tt>. Its <tt>int</tt> slot
+      <tt>key</tt> is one of the integers in the list. Its
+      <tt>Node</tt> slot <tt>next</tt> points to the next
+      <tt>Node</tt> in the list, or to <tt>null.</tt> Don&rsquo;t
+      write this, or change it: it&rsquo;s written for you.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>private Node(int key, Node next)</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Constructor for the class <tt>Node.</tt> It initializes a new
+      instance of <tt>Node</tt> whose <tt>key</tt> slot is the
+      parameter <tt>key</tt>, and whose <tt>next</tt> slot is the
+      parameter <tt>next</tt>. Don&rsquo;t write this, or change it:
+      it&rsquo;s written for you.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>private Node first;</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      The head <tt>Node</tt> of a singly-linked linear list. This list
+      contains the integers to be sorted by the method <tt>sort</tt>. It
+      is made by <tt>IntySortyList</tt>&rsquo;s constructor, and printed
+      by the method <tt>toString</tt>.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>public IntySortyList(int ... keys)</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Constructor for the class <tt>IntySortyList</tt>. It returns an
+      instance of <tt>IntySortyList</tt> that contains the integers given
+      to it as its arguments. These integers are in a singly-linked linear list
+      whose head node is <tt>first</tt>. For example,
+      <tt>new</tt>&nbsp;<tt>IntySortyList()</tt> returns an empty
+      instance (written as <tt>[&nbsp;]</tt>), and
+      <tt>new</tt>&nbsp;<tt>IntySortyList(3,&nbsp;2,&nbsp;1,&nbsp;3,&nbsp;4)</tt>
+      returns an instance that contains the given integers (written as
+      <tt>[3,&nbsp;2,&nbsp;1,&nbsp;3,&nbsp;4])</tt>. Don&rsquo;t write
+      this, or change it: it&rsquo;s written for you.
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>public void sort()</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Sort the integers in the list <tt>first</tt> into nondecreasing
+      order. Then let <tt>first</tt> point to the resulting sorted list.
+      You must use the Selection Sort algorithm described above. <i>You must
+      write this method yourself.</i>
+     </p>
+    </dd>
+    <dt>
+     <p>
+      <tt>public String toString()</tt>
+     </p>
+    </dt>
+    <dd>
+     <p align="justify">
+      Return a <tt>String</tt> that says what integers are in the list.
+      This is used for printing. For example, it might return strings like
+      <tt>"[&nbsp;]"</tt> or
+      <tt>"[3,&nbsp;2,&nbsp;1,&nbsp;3,&nbsp;4]"</tt>. Don&rsquo;t write
+      this, or change it: it&rsquo;s written for you.
+     </p>
+    </dd>
+   </dl>
+  </blockquote>
+  <p align="justify">
+   Hints: you can write additional &lsquo;&lsquo;helper&rsquo;&rsquo; methods
+   if you wish. The list <tt>first</tt> can contain any
+   <tt>int</tt>&rsquo;s, not just the ones shown in examples.
+   <br>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; It is possible to select a maximum element
+   and delete it, in one pass through a list, using only one loop. It is also
+   possible to write <tt>sort</tt> so it doesn&rsquo;t make any new
+   <tt>Node</tt>&rsquo;s, and runs in <i>O</i>(1) extra space. You
+   need not write your code to work that way, but it might be fun to try it
+   (for some non-standard definition of the word <i>fun</i>).
+  </p>
+  <p>
+   <b>3. Deliverables.</b>
+  </p>
+  <p align="justify">
+   Add your Java code for the method <tt>sort</tt> to
+   <tt>IntySortyList.java</tt>. The file
+   <a href="tests12.java">
+    <tt>tests12.java</tt>
+   </a>
+   on Canvas contains a driver class, whose <tt>main</tt> method tests
+   your <tt>sort</tt> method in the usual way. Run the tests, for a total
+   of <b>30 points.</b> Turn in <tt>IntySortyList.java</tt> with your
+   <tt>sort</tt> method in it, and the Java code for the driver class, all
+   in one file. Put the printed results of the tests in a comment at the bottom
+   of the file. This laboratory assignment will be due at <b>11:55
+   <small>PM</small></b> on <b>Wednesday, December 9, 2020.</b>
+  </p>
+ </body>
+</html>
